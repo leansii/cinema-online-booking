@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/entities/auth'
 import AppButton from '@/shared/components/ui/AppButton.vue'
+import AppLink from '@/shared/components/ui/AppLink.vue'
 
-const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -26,21 +26,12 @@ const navItems = computed(() => {
   ]
 })
 
-function isActive(to: string) {
-  if (to === '/logout') {
-    return false
-  }
-  return route.path.startsWith(to)
-}
-
 function handleNavigation(item: (typeof navItems)['value'][number]) {
   if (item.action === 'logout') {
     authStore.clearAuth()
     router.push('/movies')
     return
   }
-
-  router.push(item.to)
 }
 </script>
 
@@ -48,16 +39,14 @@ function handleNavigation(item: (typeof navItems)['value'][number]) {
   <aside class="sidebar">
     <h1 class="sidebar__title">Cinema</h1>
     <nav class="sidebar__nav">
-      <AppButton
-        v-for="item in navItems"
-        :key="item.label"
-        variant="nav"
-        kind="a"
-        :is-active="isActive(item.to)"
-        @click="handleNavigation(item)"
-      >
-        {{ item.label }}
-      </AppButton>
+      <template v-for="item in navItems" :key="item.label">
+        <AppLink v-if="!item.action" :to="item.to" variant="nav">
+          {{ item.label }}
+        </AppLink>
+        <AppButton v-else variant="nav" @click="handleNavigation(item)">
+          {{ item.label }}
+        </AppButton>
+      </template>
     </nav>
   </aside>
 </template>

@@ -2,7 +2,7 @@
 const props = withDefaults(
   defineProps<{
     to: string
-    variant?: 'primary' | 'secondary'
+    variant?: 'primary' | 'secondary' | 'nav'
   }>(),
   {
     variant: 'primary',
@@ -28,5 +28,24 @@ const props = withDefaults(
 
 .link--secondary {
   color: var(--color-text-secondary);
+}
+
+.link--nav {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.link--nav:hover,
+.link--nav.router-link-active,
+.link--nav.router-link-exact-active {
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
 }
 </style>
