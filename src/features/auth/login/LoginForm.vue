@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import AppFormField from '@/shared/components/ui/AppFormField.vue'
 import AppTextField from '@/shared/components/ui/AppTextField.vue'
 import AppButton from '@/shared/components/ui/AppButton.vue'
@@ -35,6 +36,8 @@ const isFormValid = computed(() => {
 })
 
 const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
 
 async function handleSubmit() {
   state.touched.username = true
@@ -50,6 +53,8 @@ async function handleSubmit() {
   try {
     const response = await login({ username: state.username.trim(), password: state.password })
     authStore.setAuthToken(response.token)
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/tickets'
+    await router.push(redirect)
   } catch (error) {
     const normalized = normalizeApiError(error)
     state.error =
@@ -71,6 +76,7 @@ async function handleSubmit() {
         v-model="state.username"
         autocomplete="username"
         placeholder="Введите логин"
+        :error="usernameError"
         @blur="state.touched.username = true"
       />
     </AppFormField>
@@ -82,6 +88,7 @@ async function handleSubmit() {
         type="password"
         autocomplete="current-password"
         placeholder="Введите пароль"
+        :error="passwordError"
         @blur="state.touched.password = true"
       />
     </AppFormField>
