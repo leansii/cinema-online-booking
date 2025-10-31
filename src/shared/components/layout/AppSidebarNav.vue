@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/entities/auth'
+import AppButton from '@/shared/components/ui/AppButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -47,16 +48,16 @@ function handleNavigation(item: (typeof navItems)['value'][number]) {
   <aside class="sidebar">
     <h1 class="sidebar__title">Cinema</h1>
     <nav class="sidebar__nav">
-      <button
-        class="sidebar__link"
-        :class="{ 'sidebar__link--active': isActive(item.to) }"
+      <AppButton
         v-for="item in navItems"
         :key="item.label"
-        type="button"
+        variant="nav"
+        kind="a"
+        :is-active="isActive(item.to)"
         @click="handleNavigation(item)"
       >
         {{ item.label }}
-      </button>
+      </AppButton>
     </nav>
   </aside>
 </template>
@@ -83,21 +84,4 @@ function handleNavigation(item: (typeof navItems)['value'][number]) {
   gap: 8px;
 }
 
-.sidebar__link {
-  width: 100%;
-  text-align: left;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background-color: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-
-.sidebar__link--active,
-.sidebar__link:hover {
-  border-color: var(--color-border);
-  color: var(--color-text-primary);
-}
 </style>
