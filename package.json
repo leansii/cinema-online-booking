@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:api": "openapi --input ./openapi/swagger.json --output ./src/api/generated --useOptions --client axios --indent 2"
+    "generate:api": "openapi --input http://localhost:3000/api-docs.json --output ./src/shared/api/generated --useOptions --client axios --indent 2"
   },
   "dependencies": {
     "axios": "^1.7.7",

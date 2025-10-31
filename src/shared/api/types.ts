@@ -1,9 +1,9 @@
-export interface ApiErrorPayload {
+export interface NormalizedApiErrorPayload {
   message: string
   error?: string
 }
 
-export interface ApiError extends Error {
+export interface NormalizedApiError extends Error {
   status?: number
-  payload?: ApiErrorPayload
+  payload?: NormalizedApiErrorPayload
 }

@@ -1,27 +1,49 @@
 import type { AxiosError } from 'axios'
-import type { ApiError } from './types'
+import { ApiError as GeneratedApiError } from './generated'
+import type { NormalizedApiError, NormalizedApiErrorPayload } from './types'
 
-export function normalizeApiError(error: unknown): ApiError {
-  if ((error as AxiosError)?.isAxiosError) {
-    const axiosError = error as AxiosError<{ message?: string; error?: string }>
-    const normalized: ApiError = new Error(axiosError.message)
+function createNormalizedError(
+  message: string,
+  status?: number,
+  payload?: NormalizedApiErrorPayload
+): NormalizedApiError {
+  const normalized: NormalizedApiError = new Error(message)
+  if (typeof status === 'number') {
+    normalized.status = status
+  }
+  if (payload) {
+    normalized.payload = payload
+  }
+  return normalized
+}
 
-    normalized.status = axiosError.response?.status
+export function normalizeApiError(error: unknown): NormalizedApiError {
+  if (error instanceof GeneratedApiError) {
+    const body = (typeof error.body === 'object' && error.body !== null
+      ? (error.body as { message?: string; error?: string })
+      : {})
 
-    const payload = axiosError.response?.data ?? {}
-    normalized.payload = {
-      message: payload.message ?? axiosError.message ?? 'Неизвестная ошибка',
-      error: payload.error,
+    const payload: NormalizedApiErrorPayload = {
+      message: body.message ?? error.message ?? 'Неизвестная ошибка',
+      error: body.error,
     }
 
-    return normalized
+    return createNormalizedError(payload.message, error.status, payload)
+  }
+
+  if ((error as AxiosError)?.isAxiosError) {
+    const axiosError = error as AxiosError<{ message?: string; error?: string }>
+    const payload: NormalizedApiErrorPayload = {
+      message: axiosError.response?.data?.message ?? axiosError.message ?? 'Неизвестная ошибка',
+      error: axiosError.response?.data?.error,
+    }
+
+    return createNormalizedError(payload.message, axiosError.response?.status, payload)
   }
 
   if (error instanceof Error) {
-    return error as ApiError
+    return error as NormalizedApiError
   }
 
-  const fallback: ApiError = new Error('Unexpected error')
-  fallback.status = 0
-  return fallback
+  return createNormalizedError('Unexpected error', 0)
 }
