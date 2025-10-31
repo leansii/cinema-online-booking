@@ -81,6 +81,13 @@ const loginLink = computed(() => ({
 const selectedSeatsLabels = computed(() =>
   selectedSeats.value.map((seat) => `Ряд ${seat.rowNumber}, место ${seat.seatNumber}`)
 )
+
+function handleSeatSelectionBlocked() {
+  router.push({
+    name: 'register',
+    query: { redirect: route.fullPath },
+  })
+}
 </script>
 
 <template>
@@ -113,6 +120,7 @@ const selectedSeatsLabels = computed(() =>
           :layout="layout"
           :booked-seats="bookedSeats"
           :interactive="isAuthenticated"
+          @interaction-blocked="handleSeatSelectionBlocked"
         />
 
         <div class="session__aside">

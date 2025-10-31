@@ -20,6 +20,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: SeatCoordinate[]): void
+  (event: 'interactionBlocked', seat: SeatCoordinate): void
 }>()
 
 const bookedSeatsRef = computed(() => props.bookedSeats)
@@ -57,6 +58,7 @@ const selectedCount = computed(() => seatSelection.selectedSeats.value.length)
       :selected-seats="seatSelection.selectedSeats"
       :interactive="interactive"
       @toggle="seatSelection.toggleSeat"
+      @inactive-select="(seat) => emit('interactionBlocked', seat)"
     />
 
     <p class="select-seats__info">

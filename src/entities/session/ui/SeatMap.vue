@@ -19,6 +19,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'toggle', seat: SeatCoordinate): void
+  (event: 'inactiveSelect', seat: SeatCoordinate): void
 }>()
 
 function seatKey(seat: SeatCoordinate) {
@@ -44,11 +45,12 @@ function isSeatSelected(rowNumber: number, seatNumber: number) {
 }
 
 function handleSelect(rowNumber: number, seatNumber: number) {
+  const seat: SeatCoordinate = { rowNumber, seatNumber }
+
   if (!props.interactive) {
+    emit('inactiveSelect', seat)
     return
   }
-
-  const seat: SeatCoordinate = { rowNumber, seatNumber }
 
   if (bookedSet.value.has(seatKey(seat))) {
     return

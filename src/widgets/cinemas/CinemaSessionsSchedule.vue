@@ -86,12 +86,14 @@ const emit = defineEmits<{
 .sessions__movie {
   display: flex;
   gap: 16px;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .sessions__movie-name {
-  min-width: 260px;
+  flex: 0 0 280px;
+  max-width: 320px;
   font-weight: 500;
+  line-height: 1.4;
 }
 
 .sessions__slots {
