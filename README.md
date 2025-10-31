@@ -1,5 +1,76 @@
-# Vue 3 + TypeScript + Vite
+# Cinema Online Booking (Frontend)
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Клиентская часть платформы онлайн-бронирования билетов в кинотеатр. Приложение реализовано на Vue 3 с TypeScript и следует Feature-Sliced Design для поддержки масштабируемости и низкой связанности модулей.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Стек
+
+- Vue 3 + Vite
+- Pinia
+- Vue Router
+- Axios
+- Vitest + @testing-library/vue
+
+## Требования
+
+- Node.js 20+
+- npm 10+
+- Запущенный backend из тестового задания (см. документацию backend-репозитория)
+
+## Быстрый старт
+
+```bash
+cp .env.example .env            # укажите адрес backend API в VITE_API_BASE_URL
+npm install
+npm run dev
+```
+
+Приложение будет доступно по адресу `http://localhost:5173`.
+
+## Скрипты
+
+| Команда             | Назначение                                |
+| ------------------- | ----------------------------------------- |
+| `npm run dev`       | локальная разработка                      |
+| `npm run build`     | типизация + production сборка             |
+| `npm run preview`   | предпросмотр собранного приложения        |
+| `npm run test`      | запуск юнит-тестов                        |
+| `npm run test:watch`| тесты в watch-режиме                      |
+| `npm run generate:api` | генерация typed-клиента из swagger JSON |
+
+## Генерация API-клиента
+
+1. Скачайте `swagger.json` backend-а и поместите файл в `openapi/swagger.json`.
+2. Выполните `npm run generate:api` — сгенерированные типы и клиент появятся в `src/shared/api/generated`.
+
+## Структура проекта
+
+Проект организован по FSD:
+
+- `app/` — корневые провайдеры (роутер, store, layout)
+- `pages/` — конечные страницы (композиция виджетов и фич)
+- `widgets/` — крупные блоки страницы
+- `features/` — завершённые пользовательские сценарии (логин, выбор мест, оплата)
+- `entities/` — модели и UI вокруг доменных сущностей (фильм, кинотеатр, бронирование)
+- `shared/` — UI атомы, утилиты, API, стили
+
+## Тестирование
+
+```bash
+npm run test
+```
+
+Покрываются:
+- утилиты валидации
+- группировка сеансов и бронирований
+- выбор мест
+- ключевые UI-компоненты (списки фильмов и др.)
+
+## Полезные заметки
+
+- Для неавторизованных пользователей выбор мест недоступен — кнопка ведёт на страницу логина с возвратом по `redirect`.
+- Таймер оплаты билетов перезапускается при каждом обновлении списка и автоматически удаляет просроченные брони.
+- Конфигурация цвета и типографики вынесена в `src/shared/styles/base.css`.
+
+## Линтинг и типизация
+
+`npm run build` выполняет строгую проверку типов (`vue-tsc`) перед сборкой. Рекомендуется запускать перед отправкой решения.
