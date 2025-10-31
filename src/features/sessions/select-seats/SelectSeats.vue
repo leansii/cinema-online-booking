@@ -32,16 +32,16 @@ const seatSelection = useSeatSelection({
 watch(
   () => props.modelValue,
   (value) => {
-    seatSelection.setSelection(value)
-  }
+    seatSelection.setSelection(value ?? [])
+  },
+  { immediate: true }
 )
 
 watch(
-  () => seatSelection.selectedSeats.value,
+  seatSelection.selectedSeats,
   (value) => {
     emit('update:modelValue', value)
-  },
-  { deep: true }
+  }
 )
 
 const selectedCount = computed(() => seatSelection.selectedSeats.value.length)

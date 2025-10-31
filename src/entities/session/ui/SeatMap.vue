@@ -25,8 +25,23 @@ function seatKey(seat: SeatCoordinate) {
   return `${seat.rowNumber}-${seat.seatNumber}`
 }
 
-const bookedSet = computed(() => new Set(unref(props.bookedSeats).map(seatKey)))
-const selectedSet = computed(() => new Set(unref(props.selectedSeats).map(seatKey)))
+const bookedSet = computed(() => {
+  const seats = unref(props.bookedSeats)
+  return new Set(seats.map(seatKey))
+})
+
+const selectedSet = computed(() => {
+  const seats = unref(props.selectedSeats)
+  return new Set(seats.map(seatKey))
+})
+
+function isSeatBooked(rowNumber: number, seatNumber: number) {
+  return bookedSet.value.has(`${rowNumber}-${seatNumber}`)
+}
+
+function isSeatSelected(rowNumber: number, seatNumber: number) {
+  return selectedSet.value.has(`${rowNumber}-${seatNumber}`)
+}
 
 function handleSelect(rowNumber: number, seatNumber: number) {
   if (!props.interactive) {
@@ -45,24 +60,30 @@ function handleSelect(rowNumber: number, seatNumber: number) {
 
 <template>
   <div class="seat-map">
-    <div class="seat-map__header" :style="{ gridTemplateColumns: `repeat(${seatsPerRow}, 32px)` }">
-      <span v-for="seatNumber in seatsPerRow" :key="seatNumber">{{ seatNumber }}</span>
+    <div class="seat-map__header">
+      <span class="seat-map__row-label seat-map__row-label--placeholder">ряд</span>
+      <div
+        class="seat-map__header-grid"
+        :style="{ gridTemplateColumns: `repeat(${seatsPerRow}, var(--seat-size))` }"
+      >
+        <span v-for="seatNumber in seatsPerRow" :key="seatNumber">{{ seatNumber }}</span>
+      </div>
     </div>
     <div class="seat-map__rows">
       <div v-for="rowNumber in rows" :key="rowNumber" class="seat-map__row">
         <span class="seat-map__row-label">ряд {{ rowNumber }}</span>
         <div
           class="seat-map__row-seats"
-          :style="{ gridTemplateColumns: `repeat(${seatsPerRow}, 32px)` }"
+          :style="{ gridTemplateColumns: `repeat(${seatsPerRow}, var(--seat-size))` }"
         >
           <SeatCell
             v-for="seatNumber in seatsPerRow"
             :key="seatNumber"
             :label="`Ряд ${rowNumber}, место ${seatNumber}`"
             :status="
-              bookedSet.has(`${rowNumber}-${seatNumber}`)
+              isSeatBooked(rowNumber, seatNumber)
                 ? 'booked'
-                : selectedSet.has(`${rowNumber}-${seatNumber}`)
+                : isSeatSelected(rowNumber, seatNumber)
                   ? 'selected'
                   : 'available'
             "
@@ -87,18 +108,30 @@ function handleSelect(rowNumber: number, seatNumber: number) {
 
 <style scoped>
 .seat-map {
+  --seat-size: 32px;
+  --seat-gap: 8px;
+  --row-label-width: 70px;
+  --row-gap: 16px;
+
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .seat-map__header {
-  display: grid;
-  grid-template-columns: repeat(var(--seats-per-row), 32px);
-  gap: 8px;
+  display: flex;
   justify-content: center;
+  align-items: flex-end;
+  gap: var(--row-gap);
   color: var(--color-text-secondary);
   font-size: 12px;
+}
+
+.seat-map__header-grid {
+  display: grid;
+  gap: var(--seat-gap);
+  justify-content: center;
+  text-align: center;
 }
 
 .seat-map__rows {
@@ -110,21 +143,25 @@ function handleSelect(rowNumber: number, seatNumber: number) {
 .seat-map__row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--row-gap);
   justify-content: center;
 }
 
 .seat-map__row-label {
-  width: 70px;
+  width: var(--row-label-width);
   text-transform: lowercase;
   color: var(--color-text-secondary);
   font-size: 14px;
 }
 
+.seat-map__row-label--placeholder {
+  visibility: hidden;
+}
+
 .seat-map__row-seats {
   display: grid;
-  grid-template-columns: repeat(var(--seats-per-row), 32px);
-  gap: 8px;
+  grid-template-columns: repeat(var(--seats-per-row), var(--seat-size));
+  gap: var(--seat-gap);
 }
 
 .seat-map__legend {
@@ -153,12 +190,12 @@ function handleSelect(rowNumber: number, seatNumber: number) {
 }
 
 .seat-map__legend-dot--selected {
-  background-color: rgba(255, 255, 255, 0.75);
-  border-color: rgba(255, 255, 255, 0.9);
+  background-color: #4c6ef5;
+  border-color: #7995ff;
 }
 
 .seat-map__legend-dot--booked {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(235, 87, 87, 0.35);
+  border-color: rgba(235, 87, 87, 0.8);
 }
 </style>

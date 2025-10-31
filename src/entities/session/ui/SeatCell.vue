@@ -18,7 +18,12 @@ const emit = defineEmits<{
   <button
     type="button"
     class="seat"
-    :class="`seat--${props.status}`"
+    :class="{
+      'seat--available': props.status === 'available',
+      'seat--selected': props.status === 'selected',
+      'seat--booked': props.status === 'booked',
+    }"
+    :data-status="props.status"
     :disabled="props.status === 'booked'"
     @click="emit('select')"
   >
@@ -28,6 +33,11 @@ const emit = defineEmits<{
 
 <style scoped>
 .seat {
+  --seat-selected-bg: #4c6ef5;
+  --seat-selected-border: #7995ff;
+  --seat-booked-bg: rgba(235, 87, 87, 0.35);
+  --seat-booked-border: rgba(235, 87, 87, 0.8);
+
   width: 32px;
   height: 32px;
   border-radius: 6px;
@@ -45,13 +55,13 @@ const emit = defineEmits<{
 }
 
 .seat--selected {
-  background-color: rgba(255, 255, 255, 0.75);
-  border-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--seat-selected-bg);
+  border-color: var(--seat-selected-border);
 }
 
 .seat--booked {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--seat-booked-bg);
+  border-color: var(--seat-booked-border);
   cursor: not-allowed;
 }
 
